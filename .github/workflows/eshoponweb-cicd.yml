@@ -25,7 +25,7 @@ jobs:
         run: dotnet build eShopOnWeb.sln --no-restore --configuration Release
 
       - name: Publish app
-        run: dotnet publish src/Web/Web.csproj --configuration Release -o ./publish
+        run: run: dotnet publish src/Web/Web.csproj --configuration Release -o ./publish -p:UseAppHost=false
 
       - name: Deploy via FTPS to Azure
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4

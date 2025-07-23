@@ -1,4 +1,4 @@
-name: Build and Deploy to Azure Web App over FTP
+name: Build and Deploy via FTP to Azure Web App
 
 on:
   push:
@@ -13,21 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore eShopOnWeb.sln
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build eShopOnWeb.sln --no-restore --configuration Release
 
-      - name: Publish
-        run: dotnet publish -c Release -o publish
+      - name: Publish app
+        run: dotnet publish src/Web/Web.csproj --configuration Release -o ./publish
 
-      - name: Deploy to Azure App Service via FTP
+      - name: Deploy via FTPS to Azure
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}

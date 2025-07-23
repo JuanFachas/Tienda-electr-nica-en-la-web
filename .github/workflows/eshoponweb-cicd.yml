@@ -1,6 +1,6 @@
 name: Build and Deploy via FTP to Azure Web App
 
-on:
+#on:
   push:
     branches:
       - main

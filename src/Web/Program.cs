@@ -1,4 +1,4 @@
-﻿using System.Net.Mime;
+using System.Net.Mime;
 using Ardalis.ListStartupServices;
 using Azure.Identity;
 using BlazorAdmin;
@@ -36,7 +36,18 @@ else
 {
     // Configure SQL Server (prod)
     var credential = new ChainedTokenCredential(new AzureDeveloperCliCredential(), new DefaultAzureCredential());
-    builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AZURE_KEY_VAULT_ENDPOINT"] ?? ""), credential);
+    var keyVaultEndpoint = builder.Configuration["AZURE_KEY_VAULT_ENDPOINT"];
+    if (!string.IsNullOrEmpty(keyVaultEndpoint))
+    {
+        builder.Configuration.AddAzureKeyVault(new Uri(keyVaultEndpoint), credential);
+    }
+    else
+    {
+        builder.Logging.AddConsole();
+        builder.Logging.AddDebug();
+        Console.WriteLine("⚠️ AZURE_KEY_VAULT_ENDPOINT no está configurado. Se omitió la conexión a Azure Key Vault.");
+    }
+
     builder.Services.AddDbContext<CatalogContext>(c =>
     {
         var connectionString = builder.Configuration[builder.Configuration["AZURE_SQL_CATALOG_CONNECTION_STRING_KEY"] ?? ""];

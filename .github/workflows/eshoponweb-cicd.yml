@@ -1,4 +1,4 @@
-name: Build and Deploy via FTP to Azure Web App
+name: FTP Deploy
 
 on:
   push:
@@ -10,28 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x'
 
-      - name: Restore dependencies
-        run: dotnet restore eShopOnWeb.sln
+    - name: Restore dependencies
+      run: dotnet restore ./Tienda-electrónica-en-la-web.sln
 
-      - name: Build
-        run: dotnet build eShopOnWeb.sln --no-restore --configuration Release
+    - name: Build
+      run: dotnet build ./Tienda-electrónica-en-la-web.sln --configuration Release --no-restore
 
-      - name: Publish app
-        run: dotnet publish src/Web/Web.csproj --configuration Release -o ./publish
+    - name: Publish
+      run: dotnet publish ./Tienda-electrónica-en-la-web/Tienda-electrónica-en-la-web.csproj --configuration Release --output ./publish
 
-      - name: Deploy via FTPS to Azure
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./publish/
-          server-dir: /site/wwwroot/
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps
+        local-dir: ./publish/
+        server-dir: /site/wwwroot/
